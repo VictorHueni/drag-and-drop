@@ -18,6 +18,7 @@ let backlogListArray = [];
 let progressListArray = [];
 let completeListArray = [];
 let onHoldListArray = [];
+let listIdArrays = ['backlogItems', 'progressItems', 'onHoldItems', 'completeItems'];
 let listArrays = {};
 
 // Drag Functionality
@@ -103,6 +104,32 @@ function updateDOM() {
     // Run getSavedColumns only once, Update Local Storage
     updatedOnLoad = true;
     updateSavedColumns();
+}
+
+// Add to Column List, Rest Textbox
+function addToColum(column) {
+    const itemText = addItems[column].textContent;
+    const selectedArray = listArrays[listIdArrays[column]];
+    selectedArray.push(itemText);
+    addItems[column].textContent = '';
+    updateDOM();
+}
+
+// Show Add Item Input Box 
+function showInputBox(e) {
+    const column = e.parentNode.getAttribute('data-column-index');
+    addBtns[column].style.visibility = 'hidden';
+    saveItemBtns[column].style.display = 'flex';
+    addItemContainers[column].style.display = 'flex';
+}
+
+// Hide Add Item Input Box 
+function hideInputBox(e) {
+    const column = parseInt(e.parentNode.getAttribute('data-column-index'));
+    addBtns[column].style.visibility = 'visible';
+    saveItemBtns[column].style.display = 'none';
+    addItemContainers[column].style.display = 'none';
+    addToColum(column);
 }
 
 // Allows arraays to reflect Drag and Drop items
