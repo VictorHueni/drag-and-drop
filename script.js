@@ -19,7 +19,7 @@ let progressListArray = [];
 let completeListArray = [];
 let onHoldListArray = [];
 let listIdArrays = ['backlogItems', 'progressItems', 'onHoldItems', 'completeItems'];
-let listArrays = {};
+let listArrays = [];
 
 // Drag Functionality
 let draggedItem;
@@ -45,14 +45,10 @@ function getSavedColumns() {
 // Set localStorage Arrays
 function updateSavedColumns() {
 
-    listArrays['backlogItems'] = backlogListArray;
-    listArrays['progressItems'] = progressListArray;
-    listArrays['onHoldItems'] = onHoldListArray;
-    listArrays['completeItems'] = completeListArray;
-
-    for (const key in listArrays) {
-        localStorage.setItem(`${key}`, JSON.stringify(listArrays[key]));
-    }
+    listArrays = [backlogListArray, progressListArray, onHoldListArray, completeListArray];
+    listArrays.map((array, index) => {
+        localStorage.setItem(`${listIdArrays[index]}`, JSON.stringify(array));
+    });
 }
 
 // Create DOM Elements for each list item
@@ -110,7 +106,7 @@ function updateDOM() {
 
 // Update Item - Delete if necessary, or update Array value
 function updateItem(id, column) {
-    const selectedArray = listArrays[listIdArrays[column]];
+    const selectedArray = listArrays[id];
     const selectedColumnEl = listColumns[column].children;
     if (!dragging) {
         if (!selectedColumnEl[id].textContent) {
@@ -125,7 +121,7 @@ function updateItem(id, column) {
 // Add to Column List, Rest Textbox
 function addToColum(column) {
     const itemText = addItems[column].textContent;
-    const selectedArray = listArrays[listIdArrays[column]];
+    const selectedArray = listArrays[column];
     selectedArray.push(itemText);
     addItems[column].textContent = '';
     updateDOM();
@@ -150,25 +146,11 @@ function hideInputBox(e) {
 
 // Allows arraays to reflect Drag and Drop items
 function rebuildArrays() {
-    //Reset Array
-    backlogListArray = [];
-    progressListArray = [];
-    completeListArray = [];
-    onHoldListArray = [];
-
     //Rebuild Array
-    for (let i = 0; i < backlogList.children.length; i++) {
-        backlogListArray.push(backlogList.children[i].textContent);
-    }
-    for (let i = 0; i < progressList.children.length; i++) {
-        progressListArray.push(progressList.children[i].textContent);
-    }
-    for (let i = 0; i < completeList.children.length; i++) {
-        completeListArray.push(completeList.children[i].textContent);
-    }
-    for (let i = 0; i < onHoldList.children.length; i++) {
-        onHoldListArray.push(onHoldList.children[i].textContent);
-    }
+    backlogListArray = Array.from(backlogList.children).map((v) => v.textContent);
+    progressListArray = Array.from(progressList.children).map((v) => v.textContent);
+    completeListArray = Array.from(completeList.children).map((v) => v.textContent);
+    onHoldListArray = Array.from(onHoldList.children).map((v) => v.textContent);
     updateDOM();
 }
 
