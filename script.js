@@ -24,6 +24,7 @@ let listArrays = {};
 // Drag Functionality
 let draggedItem;
 let currentColumn;
+let dragging = false;
 
 
 // Get Arrays from localStorage if available, set default values if not
@@ -89,17 +90,18 @@ function updateDOM() {
         createItemEl(progressList, 1, progressItem, index);
     });
 
-    // Complete Column
-    completeList.textContent = '';
-    completeListArray.forEach((completeItem, index) => {
-        createItemEl(completeList, 2, completeItem, index);
-    });
-
     // On Hold Column
     onHoldList.textContent = '';
     onHoldListArray.forEach((onHoldItem, index) => {
-        createItemEl(onHoldList, 3, onHoldItem, index);
+        createItemEl(onHoldList, 2, onHoldItem, index);
     });
+
+    // Complete Column
+    completeList.textContent = '';
+    completeListArray.forEach((completeItem, index) => {
+        createItemEl(completeList, 3, completeItem, index);
+    });
+
 
     // Run getSavedColumns only once, Update Local Storage
     updatedOnLoad = true;
@@ -110,11 +112,14 @@ function updateDOM() {
 function updateItem(id, column) {
     const selectedArray = listArrays[listIdArrays[column]];
     const selectedColumnEl = listColumns[column].children;
-    if (!selectedColumnEl[id].textContent) {
-        selectedArray.splice(id, 1);
+    if (!dragging) {
+        if (!selectedColumnEl[id].textContent) {
+            selectedArray.splice(id, 1);
+        } else {
+            selectedArray[id] = selectedColumnEl[id].textContent;
+        }
+        updateDOM();
     }
-    updateDOM();
-
 }
 
 // Add to Column List, Rest Textbox
@@ -170,6 +175,8 @@ function rebuildArrays() {
 // When item starts draggin
 function drag(e) {
     draggedItem = e.target;
+    // Start Dragging
+    dragging = true;
 }
 // Column allows for Item to drop
 function allowDrop(e) {
@@ -190,6 +197,8 @@ function drop(e) {
     // Add item to  Column
     const parent = listColumns[currentColumn];
     parent.appendChild(draggedItem);
+    // Dragging Complete
+    dragging = false;
     rebuildArrays();
 }
 
