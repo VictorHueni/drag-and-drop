@@ -74,7 +74,6 @@ function updateDOM() {
     // Check localStorage once
     if (!updatedOnLoad) {
         getSavedColumns();
-        updatedOnLoad = true;
     }
 
     // Backlog Column
@@ -102,6 +101,32 @@ function updateDOM() {
     });
 
     // Run getSavedColumns only once, Update Local Storage
+    updatedOnLoad = true;
+    updateSavedColumns();
+}
+
+// Allows arraays to reflect Drag and Drop items
+function rebuildArrays() {
+    //Reset Array
+    backlogListArray = [];
+    progressListArray = [];
+    completeListArray = [];
+    onHoldListArray = [];
+
+    //Rebuild Array
+    for (let i = 0; i < backlogList.children.length; i++) {
+        backlogListArray.push(backlogList.children[i].textContent);
+    }
+    for (let i = 0; i < progressList.children.length; i++) {
+        progressListArray.push(progressList.children[i].textContent);
+    }
+    for (let i = 0; i < completeList.children.length; i++) {
+        completeListArray.push(completeList.children[i].textContent);
+    }
+    for (let i = 0; i < onHoldList.children.length; i++) {
+        onHoldListArray.push(onHoldList.children[i].textContent);
+    }
+    updateDOM();
 }
 
 // When item starts draggin
@@ -127,6 +152,7 @@ function drop(e) {
     // Add item to  Column
     const parent = listColumns[currentColumn];
     parent.appendChild(draggedItem);
+    rebuildArrays();
 }
 
 
